@@ -44,6 +44,8 @@ class User(AbstractUser):
         help_text='Обязательное. Не более 150 символов.'
         )
 
+    USERNAME_FIELD = 'email'
+
     class Meta:
         verbose_name = 'пользователь'
         verbose_name_plural = 'Пользователи'
