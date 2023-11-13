@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework',
     'djoser',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -63,6 +64,8 @@ DATABASES = {
     }
 }
 
+AUTH_USER_MODEL = 'users.User'
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -97,3 +100,7 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = '/media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MAXL_EMAIL = 254
+
+MAXL_USERS_ATTRS = 150
