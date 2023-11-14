@@ -53,3 +53,25 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='subscriptions'
+    )
+    following = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name='followings'
+    )
+
+    class Meta:
+        ordering = ('following',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'following'],
+                name='unique_user_following'
+            ),
+            models.CheckConstraint(
+                name='user_following_different',
+                check=~models.Q(user=models.F('following')),
+            ),
+        ]
