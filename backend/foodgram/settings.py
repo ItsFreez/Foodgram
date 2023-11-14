@@ -20,7 +20,9 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework',
     'djoser',
+    'recipes.apps.RecipesConfig',
     'users.apps.UsersConfig',
+    'api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -115,5 +117,11 @@ REST_FRAMEWORK = {
 }
 
 MAXL_EMAIL = 254
+
+MAXL_INGRED_NAME = 50
+
+MAXL_INGRED_UNIT = 8
+
+MAXL_TAG_ATTRS = 10
 
 MAXL_USERS_ATTRS = 150
