@@ -1,7 +1,9 @@
 import base64
 
 from django.core.files.base import ContentFile
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from api.users.serializers import UserSerializer
 from recipes.models import (Favorite, Ingredient, Recipe,
@@ -26,7 +28,7 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class IngredientForRecipeSerializer(serializers.ModelSerializer):
+class IngredientForRecipeReadSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
@@ -35,7 +37,15 @@ class IngredientForRecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RecipeIngredientsRelated
-        fields = ("id", "name", "measurement_unit", "amount")
+        fields = ('ingredient', 'amount')
+
+
+class IngredientForRecipeWriteSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=True)
+
+    class Meta:
+        model = RecipeIngredientsRelated
+        fields = ('amount',)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -45,17 +55,20 @@ class TagSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class RecipeReadSerializer(serializers.ModelSerializer):
+class BaseRecipeSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
-    tags = TagSerializer(many=True)
-    ingredients = IngredientForRecipeSerializer(many=True)
-    author = UserSerializer()
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
         fields = '__all__'
+
+
+class RecipeReadSerializer(BaseRecipeSerializer):
+    tags = TagSerializer(many=True)
+    ingredients = IngredientForRecipeReadSerializer(many=True)
+    author = UserSerializer()
+    is_favorited = serializers.SerializerMethodField()
+    is_in_shopping_cart = serializers.SerializerMethodField()
 
     def get_is_favorited(self, obj):
         user_obj = self.context['request'].user
@@ -71,3 +84,29 @@ class RecipeReadSerializer(serializers.ModelSerializer):
                 recipe=obj
             ).exists()
         return False
+
+
+class RecipeWriteSerializer(BaseRecipeSerializer):
+    tags = serializers.PrimaryKeyRelatedField(
+        queryset=Tag.objects.all(),
+        many=True
+    )
+    ingredients = IngredientForRecipeWriteSerializer(many=True)
+    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    def validate_ingredients(self, ingredients):
+        ingredients_list = []
+        for value in ingredients:
+            ingredient = get_object_or_404(Ingredient, id=value['id'])
+            if ingredient in ingredients_list:
+                raise ValidationError(
+                    'Ингредиенты не должны быть повторяться.'
+                )
+            ingredients_list.append(ingredient)
+        return ingredients
+
+    def validate_tags(self, tags):
+        unique_tags = set(tags)
+        if len(unique_tags) != len(tags):
+            raise ValidationError('Выбранные теги не должны повторяться.')
+        return tags
