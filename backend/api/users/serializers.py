@@ -19,8 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
         user_obj = self.context['request'].user
         if user_obj.is_authenticated():
             return Follow.objects.filter(user=user_obj, following=obj).exists()
-        else:
-            return False
+        return False
 
 
 class ChangePasswordSerializer(serializers.Serializer):
