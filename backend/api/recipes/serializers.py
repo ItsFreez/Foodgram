@@ -4,7 +4,8 @@ from django.core.files.base import ContentFile
 from rest_framework import serializers
 
 from api.users.serializers import UserSerializer
-from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
+from recipes.models import (Favorite, Ingredient, Recipe,
+                            RecipeIngredientsRelated, ShoppingCart, Tag)
 
 
 class Base64ImageField(serializers.ImageField):
@@ -25,6 +26,18 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class IngredientForRecipeSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField(source='ingredient.id')
+    name = serializers.ReadOnlyField(source='ingredient.name')
+    measurement_unit = serializers.ReadOnlyField(
+        source='ingredient.measurement_unit'
+    )
+
+    class Meta:
+        model = RecipeIngredientsRelated
+        fields = ("id", "name", "measurement_unit", "amount")
+
+
 class TagSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -32,8 +45,10 @@ class TagSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class RecipeSerializer(serializers.ModelSerializer):
+class RecipeReadSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
+    tags = TagSerializer(many=True)
+    ingredients = IngredientForRecipeSerializer(many=True)
     author = UserSerializer()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
