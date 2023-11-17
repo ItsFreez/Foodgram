@@ -6,7 +6,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from api.users.mixins import UserMixinViewSet
-from api.users.serializers import ChangePasswordSerializer, UserSerializer
+from api.users.serializers import (ChangePasswordSerializer, UserSerializer,
+                                   UserForFollowSerializer)
+from users.models import Follow
 
 User = get_user_model()
 
@@ -55,3 +57,41 @@ class UserViewSet(UserMixinViewSet):
         user_obj.set_password(new_password)
         user_obj.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        methods=['post', 'delete'],
+        detail=True,
+        url_path='subscribe',
+        permission_classes=(IsAuthenticated,)
+    )
+    def delete_post_subscribe(self, request, pk):
+        following = get_object_or_404(User, id=pk)
+        if request.method in ['DELETE']:
+            obj = Follow.objects.filter(user=request.user, following=following)
+            if not obj.exists():
+                return Response(
+                    {'errors': ['Вы не подписаны на этого пользователя!']},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            obj.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        else:
+            if request.user == following:
+                return Response(
+                    {'errors': ['Нельзя подписаться на самого себя!']},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            obj, created = Follow.objects.get_or_create(
+                user=request.user,
+                following=following
+            )
+            if not created:
+                return Response(
+                    {'errors': ['Вы уже подписаны на этого автора!']},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            serializer = UserForFollowSerializer(
+                following,
+                context={'request': request}
+            )
+            return Response(serializer.data, status=status.HTTP_201_CREATED)

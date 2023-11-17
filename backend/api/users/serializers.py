@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
+from api.recipes.serializers import RecipeShortSerializer
 from users.models import Follow
 
 User = get_user_model()
@@ -20,6 +21,22 @@ class UserSerializer(serializers.ModelSerializer):
         if user_obj.is_authenticated:
             return Follow.objects.filter(user=user_obj, following=obj).exists()
         return False
+
+
+class UserForFollowSerializer(UserSerializer):
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField()
+
+    def get_recipes(self, user):
+        request = self.context.get('request')
+        limit = request.GET.get('recipes_limit')
+        recipes = user.recipes.all()
+        if limit is not None:
+            recipes = recipes[:int(limit)]
+        return RecipeShortSerializer(recipes, many=True).data
+
+    def get_recipes_count(self, user):
+        return user.recipes.count()
 
 
 class ChangePasswordSerializer(serializers.Serializer):
