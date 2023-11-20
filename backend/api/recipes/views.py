@@ -1,3 +1,7 @@
+import datetime
+
+from django.db.models import Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.decorators import action
@@ -11,7 +15,8 @@ from api.recipes.serializers import (IngredientSerializer,
                                      RecipeWriteSerializer,
                                      RecipeShortSerializer,
                                      TagSerializer)
-from recipes.models import Favorite, Ingredient, Recipe, Tag, ShoppingCart
+from recipes.models import (Favorite, Ingredient, Recipe,
+                            RecipeIngredientsRelated, Tag, ShoppingCart)
 
 
 class TagViewSet(ReadOnlyModelViewSet):
@@ -80,3 +85,38 @@ class RecipeViewSet(ModelViewSet):
         if request.method in ['DELETE']:
             return self.delete_recipe(ShoppingCart, request.user, recipe)
         return self.add_recipe(ShoppingCart, request.user, recipe)
+
+    @action(
+        methods=['get'],
+        detail=False,
+        url_path='download_shopping_cart',
+        permission_classes=(IsAuthenticated,)
+    )
+    def get_pdf_shopping_cart(self, request):
+        user = request.user
+        if not user.shopping_cart.exists():
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        ingredients = RecipeIngredientsRelated.objects.filter(
+            recipe__buyers__user=user
+        ).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).order_by('ingredients__name').annotate(amount=Sum('amount'))
+        today = datetime.today()
+        shopping_cart = (
+            f'Список покупок для {user.get_full_name()}\n'
+            f'От {today:%d.%m.%Y}\n\n'
+        )
+        for ingredient in ingredients:
+            shopping_cart += (
+                f'{ingredient["ingredient__name"]} - {ingredient["amount"]} '
+                f'{ingredient["ingredient__measurement_unit"]}\n'
+            )
+        shopping_cart += '\nFoodgram - Ваш Продуктовый помощник.'
+        file = f'Shopping_cart_for_{user.username}.txt'
+        response = HttpResponse(
+            shopping_cart,
+            content_type='text.txt; charset=utf-8'
+        )
+        response['Content-Disposition'] = f'attachment; filename={file}'
+        return response
