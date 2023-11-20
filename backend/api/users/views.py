@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 from api.users.mixins import UserMixinViewSet
 from api.users.serializers import (ChangePasswordSerializer, FollowSerializer,
-                                   UserSerializer)
+                                   UserForFollowSerializer, UserSerializer)
 from users.models import Follow
 
 User = get_user_model()
@@ -83,3 +83,19 @@ class UserViewSet(UserMixinViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save(user=self.request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(
+        methods=['get'],
+        detail=False,
+        url_path='subscriptions',
+        permission_classes=(IsAuthenticated,),
+        serializer_class=UserForFollowSerializer
+    )
+    def get_all_subscriptions(self, request):
+        queryset = User.objects.filter(followings__user=request.user)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
