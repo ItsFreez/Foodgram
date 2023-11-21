@@ -100,7 +100,7 @@ class RecipeViewSet(ModelViewSet):
         url_path='download_shopping_cart',
         permission_classes=(IsAuthenticated,)
     )
-    def get_pdf_shopping_cart(self, request):
+    def get_file_shopping_cart(self, request):
         user = request.user
         if not user.shopping_cart.exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
