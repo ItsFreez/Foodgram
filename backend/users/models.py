@@ -42,7 +42,7 @@ class User(AbstractUser):
         'Пароль',
         max_length=settings.MAXL_USERS_ATTRS,
         help_text='Обязательное. Не более 150 символов.'
-        )
+    )
 
     USERNAME_FIELD = 'email'
 
