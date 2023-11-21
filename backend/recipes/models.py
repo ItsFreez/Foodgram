@@ -122,7 +122,7 @@ class RecipeTagRelated(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='tags',
+        related_name='tags_list',
         verbose_name='Рецепт'
     )
     tag = models.ForeignKey(
@@ -146,7 +146,7 @@ class RecipeIngredientsRelated(models.Model):
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='ingredients',
+        related_name='ingredients_list',
         verbose_name='Рецепт'
     )
     ingredient = models.ForeignKey(

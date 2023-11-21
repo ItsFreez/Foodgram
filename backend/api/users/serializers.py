@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
-from api.recipes.serializers import RecipeShortSerializer
+from core.serializers import RecipeShortSerializer
 from users.models import Follow
 
 User = get_user_model()

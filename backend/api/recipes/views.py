@@ -15,8 +15,8 @@ from api.recipes.permissions import IsAdminOrOwnerOrReadOnly
 from api.recipes.serializers import (IngredientSerializer,
                                      RecipeReadSerializer,
                                      RecipeWriteSerializer,
-                                     RecipeShortSerializer,
                                      TagSerializer)
+from core.serializers import RecipeShortSerializer
 from recipes.models import (Favorite, Ingredient, Recipe,
                             RecipeIngredientsRelated, Tag, ShoppingCart)
 
