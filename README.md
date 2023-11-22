@@ -1,1 +1,3 @@
-# praktikum_new_diplom
+https://foodgrampracticum.hopto.org
+Freez@yandex.ru
+foodgramproject123456
