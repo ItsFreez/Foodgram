@@ -78,7 +78,7 @@ class Recipe(models.Model):
     )
     tags = models.ManyToManyField(
         Tag,
-        through='RecipeTagRelated',
+        related_name='recipes',
         verbose_name='Теги',
         help_text='Обязательное. Укажите теги для рецепта.'
     )
@@ -116,30 +116,6 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class RecipeTagRelated(models.Model):
-    recipe = models.ForeignKey(
-        Recipe,
-        on_delete=models.CASCADE,
-        related_name='tags_list',
-        verbose_name='Рецепт'
-    )
-    tag = models.ForeignKey(
-        Tag,
-        on_delete=models.CASCADE,
-        related_name='recipes',
-        verbose_name='Тег'
-    )
-
-    class Meta:
-        ordering = ('tag', 'recipe',)
-        constraints = [
-            models.UniqueConstraint(
-                fields=['recipe', 'tag'],
-                name='unique_recipe_tag'
-            ),
-        ]
 
 
 class RecipeIngredientsRelated(models.Model):

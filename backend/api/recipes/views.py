@@ -4,13 +4,13 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated, SAFE_METHODS
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
-from api.recipes.filters import RecipeFilter
+from api.recipes.filters import IngredientFilter, RecipeFilter
 from api.recipes.permissions import IsAdminOrOwnerOrReadOnly
 from api.recipes.serializers import (IngredientSerializer,
                                      RecipeReadSerializer,
@@ -33,8 +33,8 @@ class IngredientViewSet(ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
     permission_classes = (AllowAny,)
     pagination_class = None
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('^name',)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = IngredientFilter
 
 
 class RecipeViewSet(ModelViewSet):
@@ -109,8 +109,8 @@ class RecipeViewSet(ModelViewSet):
         ).values(
             'ingredient__name',
             'ingredient__measurement_unit'
-        ).order_by('ingredients__name').annotate(amount=Sum('amount'))
-        today = datetime.today()
+        ).order_by('ingredient__name').annotate(amount=Sum('amount'))
+        today = datetime.datetime.today()
         shopping_cart = (
             f'Список покупок для {user.get_full_name()}\n'
             f'От {today:%d.%m.%Y}\n\n'

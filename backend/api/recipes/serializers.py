@@ -1,3 +1,4 @@
+from django.db.models import F
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
@@ -23,19 +24,11 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientForRecipeWriteSerializer(serializers.ModelSerializer):
-    id = serializers.IntegerField(required=True)
+    id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = RecipeIngredientsRelated
-        fields = ('amount',)
-
-
-class IngredientForRecipeReadSerializer(IngredientForRecipeWriteSerializer):
-    id = serializers.ReadOnlyField(source='ingredient.id')
-    name = serializers.ReadOnlyField(source='ingredient.name')
-    measurement_unit = serializers.ReadOnlyField(
-        source='ingredient.measurement_unit'
-    )
+        fields = ('id', 'amount',)
 
 
 class BaseRecipeSerializer(serializers.ModelSerializer):
@@ -48,10 +41,19 @@ class BaseRecipeSerializer(serializers.ModelSerializer):
 
 class RecipeReadSerializer(BaseRecipeSerializer):
     tags = TagSerializer(many=True)
-    ingredients = IngredientForRecipeReadSerializer(many=True)
+    ingredients = serializers.SerializerMethodField()
     author = UserSerializer()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
+
+    def get_ingredients(self, obj):
+        ingredients = obj.ingredients.values(
+            'id',
+            'name',
+            'measurement_unit',
+            amount=F('recipes__amount')
+        )
+        return ingredients
 
     def get_is_favorited(self, obj):
         user_obj = self.context['request'].user

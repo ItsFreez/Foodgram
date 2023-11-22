@@ -13,10 +13,10 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         try:
             with open(CSV_PATH, newline='', encoding='utf-8') as file:
-                for row in csv.reader(file):
-                    Ingredient.objects.update_or_create(
+                for row in csv.reader(file, delimiter=','):
+                    Ingredient.objects.get_or_create(
                         name=row[0],
-                        measurement_unit=row[1]
+                        measurement_unit=row[1],
                     )
         except Exception as error:
             CommandError(error)

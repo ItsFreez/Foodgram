@@ -14,7 +14,15 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        fields = (
+            'id',
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'password',
+            'is_subscribed',
+        )
         extra_kwargs = {'password': {'write_only': True}}
 
     def get_is_subscribed(self, obj):
@@ -38,6 +46,9 @@ class UserForFollowSerializer(UserSerializer):
 
     def get_recipes_count(self, user):
         return user.recipes.count()
+
+    class Meta(UserSerializer.Meta):
+        fields = UserSerializer.Meta.fields + ('recipes', 'recipes_count',)
 
 
 class ChangePasswordSerializer(serializers.Serializer):

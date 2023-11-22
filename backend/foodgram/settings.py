@@ -101,7 +101,7 @@ STATIC_ROOT = '/backend_static/static/'
 
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_ROOT = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -125,7 +125,7 @@ MAXL_EMAIL = 254
 
 MAXL_INGRED_NAME = 50
 
-MAXL_INGRED_UNIT = 8
+MAXL_INGRED_UNIT = 15
 
 MAXL_RECIPE_NAME = 200
 
