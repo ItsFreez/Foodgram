@@ -6,4 +6,6 @@ class UserMixinViewSet(mixins.ListModelMixin,
                        mixins.CreateModelMixin,
                        mixins.RetrieveModelMixin,
                        GenericViewSet):
+    """Миксин для работы только с GET и POST запросами."""
+
     pass

@@ -10,6 +10,7 @@ from recipes.models import (Favorite, Ingredient, Recipe,
 
 
 class TagSerializer(serializers.ModelSerializer):
+    """Сериализатор объектов Tag."""
 
     class Meta:
         model = Tag
@@ -17,6 +18,7 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
+    """Сериализатор объектов Ingredient."""
 
     class Meta:
         model = Ingredient
@@ -24,6 +26,11 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class IngredientForRecipeWriteSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор промежуточной таблицы Recipe и Ingredient
+    для запросов по записи/изменению ингредиентов и их количества.
+    """
+
     id = serializers.IntegerField(write_only=True)
 
     class Meta:
@@ -32,7 +39,9 @@ class IngredientForRecipeWriteSerializer(serializers.ModelSerializer):
 
 
 class BaseRecipeSerializer(serializers.ModelSerializer):
-    image = Base64ImageField()
+    """Базовый сериализатор для объектов Recipe."""
+
+    image = Base64ImageField(use_url=True)
 
     class Meta:
         model = Recipe
@@ -40,6 +49,8 @@ class BaseRecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeReadSerializer(BaseRecipeSerializer):
+    """Сериализатор только для чтения объектов Recipe."""
+
     tags = TagSerializer(many=True)
     ingredients = serializers.SerializerMethodField()
     author = UserSerializer()
@@ -72,6 +83,8 @@ class RecipeReadSerializer(BaseRecipeSerializer):
 
 
 class RecipeWriteSerializer(BaseRecipeSerializer):
+    """Сериализатор для записи/изменения объектов Recipe."""
+
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True

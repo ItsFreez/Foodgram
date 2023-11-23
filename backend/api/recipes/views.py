@@ -22,6 +22,8 @@ from recipes.models import (Favorite, Ingredient, Recipe,
 
 
 class TagViewSet(ReadOnlyModelViewSet):
+    """Вьюсет для работы с объектами Tag."""
+
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (AllowAny,)
@@ -29,6 +31,8 @@ class TagViewSet(ReadOnlyModelViewSet):
 
 
 class IngredientViewSet(ReadOnlyModelViewSet):
+    """Вьюсет для работы с объектами Ingredient."""
+
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (AllowAny,)
@@ -38,6 +42,8 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 
 
 class RecipeViewSet(ModelViewSet):
+    """Вьюсет для работы с объектами Recipe."""
+
     queryset = Recipe.objects.all()
     serializer_class = RecipeWriteSerializer
     permission_classes = (IsAdminOrOwnerOrReadOnly,)
@@ -46,11 +52,13 @@ class RecipeViewSet(ModelViewSet):
     filterset_class = RecipeFilter
 
     def get_serializer_class(self):
+        """Возвращает сериализатор в зависимости от метода запроса."""
         if self.request.method in SAFE_METHODS:
             return RecipeReadSerializer
         return super().get_serializer_class()
 
     def add_recipe(self, model, user, recipe):
+        """Добавляет рецепт в указанный объект model."""
         obj, created = model.objects.get_or_create(user=user, recipe=recipe)
         if not created:
             return Response(
@@ -61,6 +69,7 @@ class RecipeViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_recipe(self, model, user, recipe):
+        """Удаляет рецепт из указанного объекта model."""
         obj = model.objects.filter(user=user, recipe=recipe)
         if not obj.exists():
             return Response(
@@ -77,6 +86,7 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def delete_post_favorite(self, request, pk):
+        """Добавляет/удаляет объект Recipe из избранного."""
         recipe = get_object_or_404(Recipe, id=pk)
         if request.method in ['DELETE']:
             return self.delete_recipe(Favorite, request.user, recipe)
@@ -89,6 +99,7 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def delete_post_shopping_cart(self, request, pk):
+        """Добавляет/удаляет объект Recipe из списка покупок."""
         recipe = get_object_or_404(Recipe, id=pk)
         if request.method in ['DELETE']:
             return self.delete_recipe(ShoppingCart, request.user, recipe)
@@ -101,6 +112,7 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=(IsAuthenticated,)
     )
     def get_file_shopping_cart(self, request):
+        """Формирует и отправляет файл с ингредиентами объекта Recipe."""
         user = request.user
         if not user.shopping_cart.exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)

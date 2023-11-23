@@ -5,6 +5,8 @@ from recipes.models import Ingredient, Recipe, Tag
 
 
 class IngredientFilter(FilterSet):
+    """Кастомный фильтр объектов Ingredient для поиска по названию."""
+
     name = filters.CharFilter(lookup_expr='istartswith')
 
     class Meta:
@@ -13,6 +15,11 @@ class IngredientFilter(FilterSet):
 
 
 class RecipeFilter(FilterSet):
+    """
+    Кастомный фильтр объектов Recipe для поиска по тегам, автору,
+    избранному и списку покупок.
+    """
+
     tags = filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
         to_field_name='slug',

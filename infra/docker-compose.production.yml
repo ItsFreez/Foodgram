@@ -4,7 +4,6 @@ volumes:
   pg_data:
   backend_static:
   media:
-  docs:
   frontend_static:
 
 services:
@@ -21,7 +20,6 @@ services:
     volumes:
       - backend_static:/backend_static/static/
       - media:/media/
-      - docs:/api/docs/
   frontend:
     image: itsfreez/foodgram_frontend
     command: cp -r /app/build/. /frontend_static/
@@ -36,7 +34,6 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - frontend_static:/usr/share/nginx/html/
-      - docs:/usr/share/nginx/html/api/docs/
       - backend_static:/var/html/static/
       - media:/var/html/media/
     ports:

@@ -14,11 +14,14 @@ User = get_user_model()
 
 
 class UserViewSet(UserMixinViewSet):
+    """Вьюсет для работы с объектами User."""
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (AllowAny,)
 
     def create(self, request, *args, **kwargs):
+        """Создает объект пользователя и формирует пароль."""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         password = serializer.validated_data.pop('password')
@@ -40,6 +43,7 @@ class UserViewSet(UserMixinViewSet):
         serializer_class=UserSerializer
     )
     def get_userprofile_for_owner(self, request):
+        """Возвращает описание текущего пользователя."""
         user_obj = get_object_or_404(
             User,
             username=request.user.username
@@ -55,6 +59,7 @@ class UserViewSet(UserMixinViewSet):
         serializer_class=ChangePasswordSerializer
     )
     def post_new_password(self, request):
+        """Проверяет и сохраняет новый пароль для пользователя."""
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         new_password = serializer.validated_data['new_password']
@@ -80,6 +85,7 @@ class UserViewSet(UserMixinViewSet):
         serializer_class=FollowSerializer
     )
     def delete_post_subscribe(self, request, pk):
+        """Оформляет/отменяет подписку на другого пользователя."""
         following = get_object_or_404(User, id=pk)
         if request.method in ['DELETE']:
             obj = Follow.objects.filter(user=request.user, following=following)
@@ -106,6 +112,7 @@ class UserViewSet(UserMixinViewSet):
         serializer_class=UserForFollowSerializer
     )
     def get_all_subscriptions(self, request):
+        """Получить список всех подписок пользователя."""
         queryset = User.objects.filter(followings__user=request.user)
         page = self.paginate_queryset(queryset)
         if page is not None:

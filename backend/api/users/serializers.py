@@ -10,6 +10,8 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор объектов User."""
+
     is_subscribed = serializers.SerializerMethodField()
 
     class Meta:
@@ -33,6 +35,8 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserForFollowSerializer(UserSerializer):
+    """Расширенный сериализатор объектов User с полями для рецептов."""
+
     recipes = serializers.SerializerMethodField()
     recipes_count = serializers.SerializerMethodField()
 
@@ -52,6 +56,8 @@ class UserForFollowSerializer(UserSerializer):
 
 
 class ChangePasswordSerializer(serializers.Serializer):
+    """Сериализатор для изменения пароля пользователя."""
+
     new_password = serializers.CharField(
         required=True,
         max_length=settings.MAXL_USERS_ATTRS
@@ -63,6 +69,8 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
+    """Сериализатор для работы с подписками пользователей."""
+
     user = serializers.PrimaryKeyRelatedField(
         read_only=True,
         default=serializers.CurrentUserDefault(),
