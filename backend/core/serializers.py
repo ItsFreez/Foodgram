@@ -1,5 +1,6 @@
 import base64
 
+from django.conf import settings
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 
@@ -22,8 +23,13 @@ class Base64ImageField(serializers.ImageField):
 class RecipeShortSerializer(serializers.ModelSerializer):
     """Сериализатор объектов Recipe для получения краткого описания."""
 
-    image = Base64ImageField(use_url=True)
+    image = serializers.SerializerMethodField()
 
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
+
+    def get_image(self, obj):
+        if obj.image:
+            return f'{settings.SERVER_URL}{obj.image.url}'
+        return None

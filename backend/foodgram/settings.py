@@ -39,12 +39,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'foodgram.urls'
 
-TEMPLATES_DIR = '/templates/'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATES_DIR],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -134,3 +132,5 @@ MAXL_RECIPE_NAME = 200
 MAXL_TAG_ATTRS = 10
 
 MAXL_USERS_ATTRS = 150
+
+SERVER_URL = 'https://foodgrampracticum.hopto.org'

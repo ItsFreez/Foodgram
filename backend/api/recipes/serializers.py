@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db.models import F
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
@@ -41,8 +42,6 @@ class IngredientForRecipeWriteSerializer(serializers.ModelSerializer):
 class BaseRecipeSerializer(serializers.ModelSerializer):
     """Базовый сериализатор для объектов Recipe."""
 
-    image = Base64ImageField(use_url=True)
-
     class Meta:
         model = Recipe
         exclude = ('pub_date',)
@@ -51,11 +50,17 @@ class BaseRecipeSerializer(serializers.ModelSerializer):
 class RecipeReadSerializer(BaseRecipeSerializer):
     """Сериализатор только для чтения объектов Recipe."""
 
+    image = serializers.SerializerMethodField()
     tags = TagSerializer(many=True)
     ingredients = serializers.SerializerMethodField()
     author = UserSerializer()
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
+
+    def get_image(self, obj):
+        if obj.image:
+            return f'{settings.SERVER_URL}{obj.image.url}'
+        return None
 
     def get_ingredients(self, obj):
         ingredients = obj.ingredients.values(
@@ -85,6 +90,7 @@ class RecipeReadSerializer(BaseRecipeSerializer):
 class RecipeWriteSerializer(BaseRecipeSerializer):
     """Сериализатор для записи/изменения объектов Recipe."""
 
+    image = Base64ImageField()
     tags = serializers.PrimaryKeyRelatedField(
         queryset=Tag.objects.all(),
         many=True
