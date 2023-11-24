@@ -3,8 +3,6 @@ from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 
-from users.validators import ban_name_me
-
 
 class User(AbstractUser):
     username_validator = UnicodeUsernameValidator()
@@ -14,7 +12,7 @@ class User(AbstractUser):
         max_length=settings.MAXL_USERS_ATTRS,
         unique=True,
         help_text='Обязательное. Не более 150 символов.',
-        validators=[username_validator, ban_name_me],
+        validators=(username_validator,),
         error_messages={
             'unique': 'Пользователь с таким username уже существует!',
         }
@@ -45,7 +43,7 @@ class User(AbstractUser):
     )
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = ('username', 'first_name', 'last_name')
 
     class Meta:
         verbose_name = 'пользователь'
@@ -76,7 +74,7 @@ class Follow(models.Model):
         ordering = ('user', 'following',)
         constraints = [
             models.UniqueConstraint(
-                fields=['user', 'following'],
+                fields=('user', 'following'),
                 name='unique_user_following'
             ),
             models.CheckConstraint(
