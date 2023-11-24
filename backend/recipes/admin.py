@@ -1,9 +1,14 @@
 from django.contrib import admin
 
-from recipes.models import Favorite, Ingredient, Recipe, Tag, ShoppingCart
+from recipes.models import (Favorite, Ingredient, Recipe,
+                            RecipeIngredientsRelated, Tag, ShoppingCart)
 
 
 admin.site.empty_value_display = 'Не задано'
+
+
+class IngredientInline(admin.TabularInline):
+    model = RecipeIngredientsRelated
 
 
 class TagAdmin(admin.ModelAdmin):
@@ -17,10 +22,16 @@ class IngredientAdmin(admin.ModelAdmin):
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('name', 'author', 'pub_date',)
+    list_display = ('name', 'author', 'pub_date', 'count_in_favorites')
+    readonly_fields = ('count_in_favorites',)
     search_fields = ('name',)
     list_filter = ('tags', 'author',)
     filter_horizontal = ('tags',)
+    inlines = (IngredientInline,)
+
+    @admin.display(description='Количество добавлений в избранное')
+    def count_in_favorites(self, obj):
+        return obj.followers.count()
 
 
 class FavoriteAdmin(admin.ModelAdmin):

@@ -21,17 +21,18 @@ class Command(BaseCommand):
 
     def load_ingredients(self):
         with open(CSV_PATH_INGREDIENTS, newline='', encoding='utf-8') as file:
+            ingredients = []
             for row in csv.reader(file, delimiter=','):
-                Ingredient.objects.get_or_create(
-                    name=row[0],
-                    measurement_unit=row[1],
+                ingredients.append(
+                    Ingredient(name=row[0], measurement_unit=row[1])
                 )
+            Ingredient.objects.bulk_create(ingredients)
 
     def load_tags(self):
         with open(CSV_PATH_TAGS, newline='', encoding='utf-8') as file:
+            tags = []
             for row in csv.reader(file, delimiter=','):
-                Tag.objects.get_or_create(
-                    name=row[0],
-                    color=row[1],
-                    slug=row[2]
+                tags.append(
+                    Tag(name=row[0], color=row[1], slug=row[2])
                 )
+            Tag.objects.bulk_create(tags)
