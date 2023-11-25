@@ -18,6 +18,11 @@ class UserViewSet(views.UserViewSet):
 
     pagination_class = PagePagination
 
+    def get_permissions(self):
+        if self.action == 'me':
+            self.permission_classes = (IsAuthenticated,)
+        return super().get_permissions()
+
     @action(
         methods=('post', 'delete'),
         detail=True,
@@ -25,14 +30,14 @@ class UserViewSet(views.UserViewSet):
         permission_classes=(IsAuthenticated,),
         serializer_class=FollowSerializer
     )
-    def delete_post_subscribe(self, request, pk):
+    def delete_post_subscribe(self, request, id):
         """Оформляет/отменяет подписку на другого пользователя."""
-        following = get_object_or_404(User, id=pk)
+        following = get_object_or_404(User, id=id)
         if request.method in ['DELETE']:
-            deleted_obj = Follow.objects.filter(
+            count, del_dict = Follow.objects.filter(
                 user=request.user, following=following
             ).delete()
-            if deleted_obj == 0:
+            if count == 0:
                 return Response(
                     {'errors': ['Вы не подписаны на этого пользователя!']},
                     status=status.HTTP_400_BAD_REQUEST
@@ -51,6 +56,7 @@ class UserViewSet(views.UserViewSet):
         methods=('get',),
         detail=False,
         url_path='subscriptions',
+        pagination_class=PagePagination,
         permission_classes=(IsAuthenticated,),
         serializer_class=UserForFollowSerializer
     )

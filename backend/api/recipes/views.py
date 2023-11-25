@@ -83,8 +83,10 @@ class RecipeViewSet(ModelViewSet):
     def delete_recipe(model, user, pk):
         """Удаляет рецепт из указанного объекта model."""
         recipe = get_object_or_404(Recipe, id=pk)
-        deleted_obj = model.objects.filter(user=user, recipe=recipe).delete()
-        if deleted_obj == 0:
+        count, del_dict = model.objects.filter(
+            user=user, recipe=recipe
+        ).delete()
+        if count == 0:
             return Response(
                 {'errors': ['Рецепта нет в этом списке!']},
                 status=status.HTTP_400_BAD_REQUEST
@@ -95,27 +97,25 @@ class RecipeViewSet(ModelViewSet):
         methods=('post', 'delete'),
         detail=True,
         url_path='favorite',
-        serializer_class=FavoriteSerializer,
         permission_classes=(IsAuthenticated,)
     )
     def delete_post_favorite(self, request, pk):
         """Добавляет/удаляет объект Recipe из избранного."""
         if request.method in ['DELETE']:
             return self.delete_recipe(Favorite, request.user, pk)
-        return self.add_recipe(self.get_serializer_class, pk, self.request)
+        return self.add_recipe(FavoriteSerializer, pk, self.request)
 
     @action(
         methods=('post', 'delete'),
         detail=True,
         url_path='shopping_cart',
-        serializer_class=ShoppingCartSerializer,
         permission_classes=(IsAuthenticated,)
     )
     def delete_post_shopping_cart(self, request, pk):
         """Добавляет/удаляет объект Recipe из списка покупок."""
         if request.method in ['DELETE']:
             return self.delete_recipe(ShoppingCart, request.user, pk)
-        return self.add_recipe(self.get_serializer_class, pk, self.request)
+        return self.add_recipe(ShoppingCartSerializer, pk, self.request)
 
     @staticmethod
     def create_file_shopping_cart(user, ingredients):

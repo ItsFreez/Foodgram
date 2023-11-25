@@ -1,6 +1,5 @@
 from django.db import transaction
 from django.db.models import F
-from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueTogetherValidator
@@ -17,7 +16,7 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = '__all__'
-        read_only_fields = '__all__'
+        read_only_fields = ('name', 'color', 'slug')
 
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -26,7 +25,7 @@ class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = '__all__'
-        read_only_fields = '__all__'
+        read_only_fields = ('name', 'measurement_unit')
 
 
 class IngredientForRecipeWriteSerializer(serializers.ModelSerializer):
@@ -113,10 +112,9 @@ class RecipeWriteSerializer(BaseRecipeSerializer):
     def save_ingredients_relations(recipe, ingredients):
         ingredient_list = []
         for item in ingredients:
-            ingredient = get_object_or_404(Ingredient, id=item['id'])
             ingredient_list.append(
                 RecipeIngredientsRelated(
-                    recipe=recipe, ingredient=ingredient, amount=item['amount']
+                    recipe=recipe, ingredient=item['id'], amount=item['amount']
                 )
             )
         RecipeIngredientsRelated.objects.bulk_create(ingredient_list)
@@ -168,7 +166,7 @@ class ShoppingCartSerializer(FavoriteSerializer):
         fields = '__all__'
         validators = [
             UniqueTogetherValidator(
-                queryset=Favorite.objects.all(),
+                queryset=ShoppingCart.objects.all(),
                 fields=('user', 'recipe'),
                 message='Рецепт уже добавлен в список покупок!'
             )
