@@ -116,7 +116,16 @@ REST_FRAMEWORK = {
 }
 
 DJOSER = {
-    'LOGIN_FIELD': 'email'
+    'SERIALIZERS': {
+        'user': 'api.users.serializers.UserSerializer',
+        'current_user': 'api.users.serializers.UserSerializer',
+    },
+
+    'PERMISSIONS': {
+        'user': ['rest_framework.permissions.AllowAny',],
+        'user_list': ['rest_framework.permissions.AllowAny',],
+    },
+    'HIDE_USERS': False
 }
 
 BASIC_COLORS = [

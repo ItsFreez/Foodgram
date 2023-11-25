@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
@@ -28,9 +27,12 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
     def get_is_subscribed(self, obj):
-        user_obj = self.context['request'].user
-        if user_obj.is_authenticated:
-            return Follow.objects.filter(user=user_obj, following=obj).exists()
+        request = self.context.get('request')
+        if request is not None and request.user.is_authenticated and obj:
+            return Follow.objects.filter(
+                user=request.user,
+                following=obj
+            ).exists()
         return False
 
 
@@ -55,27 +57,8 @@ class UserForFollowSerializer(UserSerializer):
         fields = UserSerializer.Meta.fields + ('recipes', 'recipes_count',)
 
 
-class ChangePasswordSerializer(serializers.Serializer):
-    """Сериализатор для изменения пароля пользователя."""
-
-    new_password = serializers.CharField(
-        required=True,
-        max_length=settings.MAXL_USERS_ATTRS
-    )
-    current_password = serializers.CharField(
-        required=True,
-        max_length=settings.MAXL_USERS_ATTRS
-    )
-
-
 class FollowSerializer(serializers.ModelSerializer):
     """Сериализатор для работы с подписками пользователей."""
-
-    user = serializers.PrimaryKeyRelatedField(
-        read_only=True,
-        default=serializers.CurrentUserDefault(),
-    )
-    following = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
 
     class Meta:
         model = Follow
@@ -83,13 +66,13 @@ class FollowSerializer(serializers.ModelSerializer):
         validators = [
             UniqueTogetherValidator(
                 queryset=Follow.objects.all(),
-                fields=('user', 'following',),
+                fields=('user', 'following'),
                 message='Подписка уже оформлена!'
             )
         ]
 
     def validate_following(self, following):
-        if following == self.context['request'].user.id:
+        if following == self.context['request'].user:
             raise serializers.ValidationError(
                 'Нельзя подписаться на самого себя!'
             )
