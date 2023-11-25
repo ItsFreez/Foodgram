@@ -152,5 +152,3 @@ MAXL_TAG_ATTRS = 10
 MAXL_USERS_ATTRS = 150
 
 DEFAULT_PAGE_SIZE = 6
-
-SERVER_URL = 'https://foodgrampracticum.hopto.org'

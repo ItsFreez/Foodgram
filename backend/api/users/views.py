@@ -41,7 +41,7 @@ class UserViewSet(views.UserViewSet):
         else:
             serializer = self.get_serializer(
                 context={'request': request},
-                data={'user': request.user, 'following': following}
+                data={'user': request.user.id, 'following': following.id}
             )
             serializer.is_valid(raise_exception=True)
             serializer.save(user=self.request.user)

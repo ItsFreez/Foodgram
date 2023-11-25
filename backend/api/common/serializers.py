@@ -1,6 +1,5 @@
 import base64
 
-from django.conf import settings
 from django.core.files.base import ContentFile
 from rest_framework import serializers
 
@@ -31,5 +30,5 @@ class RecipeShortSerializer(serializers.ModelSerializer):
 
     def get_image(self, obj):
         if obj.image:
-            return f'{settings.SERVER_URL}{obj.image.url}'
+            return obj.image.url
         return None
