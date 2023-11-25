@@ -129,8 +129,8 @@ DJOSER = {
 }
 
 BASIC_COLORS = [
-    ("#FFFFFF", "white", ),
-    ("#000000", "black", ),
+    ('#FFFFFF', 'white'),
+    ('#000000', 'black'),
 ]
 
 BASIC_MINIMAL = 1

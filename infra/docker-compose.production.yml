@@ -18,8 +18,8 @@ services:
     depends_on:
       - db
     volumes:
-      - backend_static:/backend_static/static/
-      - media:/media/
+      - backend_static:/app/backend_static/static/
+      - media:/app/media/
   frontend:
     image: itsfreez/foodgram_frontend
     command: cp -r /app/build/. /frontend_static/

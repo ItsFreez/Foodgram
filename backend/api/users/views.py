@@ -19,6 +19,7 @@ class UserViewSet(views.UserViewSet):
     pagination_class = PagePagination
 
     def get_permissions(self):
+        """Добавляет права доступа IsAuthenticated к url path - me."""
         if self.action == 'me':
             self.permission_classes = (IsAuthenticated,)
         return super().get_permissions()

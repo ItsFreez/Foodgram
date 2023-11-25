@@ -49,6 +49,10 @@ class RecipeViewSet(ModelViewSet):
     filterset_class = RecipeFilter
 
     def get_queryset(self):
+        """
+        Если пользователь авторизован, вычисляет дополнительные параметры:
+        is_favorited и is_in_shopping_cart.
+        """
         if self.request.user.is_authenticated:
             is_favorited = self.request.user.favorites.filter(
                 recipe=OuterRef('pk')
@@ -119,6 +123,7 @@ class RecipeViewSet(ModelViewSet):
 
     @staticmethod
     def create_file_shopping_cart(user, ingredients):
+        """Создает файл со списком ингредиентов для пользователя."""
         today = datetime.datetime.today()
         shopping_cart = (
             f'Список покупок для {user.get_full_name()}\n'
