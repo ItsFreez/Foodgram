@@ -16,7 +16,7 @@ from api.recipes.serializers import (IngredientSerializer,
                                      RecipeReadSerializer,
                                      RecipeWriteSerializer,
                                      TagSerializer)
-from core.serializers import RecipeShortSerializer
+from api.common.serializers import RecipeShortSerializer
 from recipes.models import (Favorite, Ingredient, Recipe,
                             RecipeIngredientsRelated, Tag, ShoppingCart)
 

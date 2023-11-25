@@ -4,8 +4,8 @@ from django.core.management.base import BaseCommand, CommandError
 
 from recipes.models import Ingredient, Tag
 
-CSV_PATH_INGREDIENTS = 'core/data/ingredients.csv'
-CSV_PATH_TAGS = 'core/data/tags.csv'
+CSV_PATH_INGREDIENTS = './data/ingredients.csv'
+CSV_PATH_TAGS = './data/tags.csv'
 
 
 class Command(BaseCommand):

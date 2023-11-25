@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'djoser',
     'django_filters',
-    'core.apps.CoreConfig',
+    'colorfield',
     'recipes.apps.RecipesConfig',
     'users.apps.UsersConfig',
     'api.apps.ApiConfig',
@@ -85,7 +85,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'UTC'
 
@@ -97,11 +97,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = '/backend_static/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'backend_static/static/')
 
 MEDIA_URL = '/media/'
 
-MEDIA_ROOT = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -113,13 +113,22 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-
-    'DEFAULT_PAGINATION_CLASS': 'core.paginators.PagePagination',
 }
 
 DJOSER = {
     'LOGIN_FIELD': 'email'
 }
+
+BASIC_COLORS = [
+    ("#FFFFFF", "white", ),
+    ("#000000", "black", ),
+]
+
+BASIC_MINIMAL = 1
+
+MAX_AMOUNT_INGRED = 10000
+
+MAX_COOKING = 1000
 
 MAXL_EMAIL = 254
 
@@ -132,5 +141,7 @@ MAXL_RECIPE_NAME = 200
 MAXL_TAG_ATTRS = 10
 
 MAXL_USERS_ATTRS = 150
+
+DEFAULT_PAGE_SIZE = 6
 
 SERVER_URL = 'https://foodgrampracticum.hopto.org'
