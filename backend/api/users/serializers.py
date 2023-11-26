@@ -28,9 +28,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     def get_is_subscribed(self, obj):
         request = self.context.get('request')
-        return request and request.user.subscriptions.filter(
-            following=obj
-        ).exists()
+        return (request and request.user.is_authenticated
+                and request.user.subscriptions.filter(
+                    following=obj
+                ).exists())
 
 
 class UserForFollowSerializer(UserSerializer):
