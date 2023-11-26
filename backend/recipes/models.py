@@ -72,6 +72,19 @@ class Ingredient(models.Model):
         return self.name
 
 
+class RecipeManager(models.Manager):
+
+    def custom_annotate(self, user):
+        is_favorited = user.favorites.filter(recipe=models.OuterRef('pk'))
+        is_in_shopping_cart = user.shopping_cart.filter(
+            recipe=models.OuterRef('pk')
+        )
+        return self.get_queryset().annotate(
+            is_favorited=models.Exists(is_favorited),
+            is_in_shopping_cart=models.Exists(is_in_shopping_cart)
+        ).order_by('-pub_date')
+
+
 class Recipe(models.Model):
     name = models.CharField(
         'Название',
@@ -116,6 +129,7 @@ class Recipe(models.Model):
         'Дата публикации',
         auto_now_add=True
     )
+    objects = RecipeManager()
 
     class Meta:
         verbose_name = 'рецепт'

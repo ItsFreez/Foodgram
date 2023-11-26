@@ -1,6 +1,6 @@
 import datetime
 
-from django.db.models import Exists, OuterRef, Sum
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -12,7 +12,7 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 
 from api.common.paginators import PagePagination
 from api.recipes.filters import IngredientFilter, RecipeFilter
-from api.recipes.permissions import IsAdminOrOwnerOrReadOnly
+from api.recipes.permissions import IsOwnerOrReadOnly
 from api.recipes.serializers import (FavoriteSerializer, IngredientSerializer,
                                      RecipeReadSerializer,
                                      RecipeWriteSerializer,
@@ -42,7 +42,7 @@ class IngredientViewSet(ReadOnlyModelViewSet):
 class RecipeViewSet(ModelViewSet):
     """Вьюсет для работы с объектами Recipe."""
 
-    permission_classes = (IsAdminOrOwnerOrReadOnly,)
+    permission_classes = (IsOwnerOrReadOnly,)
     pagination_class = PagePagination
     http_method_names = ('get', 'post', 'patch', 'delete')
     filter_backends = (DjangoFilterBackend,)
@@ -54,16 +54,7 @@ class RecipeViewSet(ModelViewSet):
         is_favorited и is_in_shopping_cart.
         """
         if self.request.user.is_authenticated:
-            is_favorited = self.request.user.favorites.filter(
-                recipe=OuterRef('pk')
-            )
-            is_in_shopping_cart = self.request.user.shopping_cart.filter(
-                recipe=OuterRef('pk')
-            )
-            return Recipe.objects.annotate(
-                is_favorited=Exists(is_favorited),
-                is_in_shopping_cart=Exists(is_in_shopping_cart)
-            ).order_by('-pub_date')
+            return Recipe.objects.custom_annotate(self.request.user)
         return Recipe.objects.all()
 
     def get_serializer_class(self):

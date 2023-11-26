@@ -44,14 +44,13 @@ class UserViewSet(views.UserViewSet):
                     status=status.HTTP_400_BAD_REQUEST
                 )
             return Response(status=status.HTTP_204_NO_CONTENT)
-        else:
-            serializer = self.get_serializer(
-                context={'request': request},
-                data={'user': request.user.id, 'following': following.id}
-            )
-            serializer.is_valid(raise_exception=True)
-            serializer.save(user=self.request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = self.get_serializer(
+            context={'request': request},
+            data={'user': request.user.id, 'following': following.id}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save(user=self.request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(
         methods=('get',),

@@ -1,7 +1,7 @@
 from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 
-class IsAdminOrOwnerOrReadOnly(BasePermission):
+class IsOwnerOrReadOnly(BasePermission):
     """Разрешение на доступ только для автора или только чтение."""
 
     def has_permission(self, request, view):

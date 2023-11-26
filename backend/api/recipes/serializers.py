@@ -88,13 +88,9 @@ class RecipeWriteSerializer(BaseRecipeSerializer):
     def validate(self, attrs):
         ingredients = self.initial_data.get('ingredients')
         tags = self.initial_data.get('tags')
-        if ingredients is None:
-            raise ValidationError('Пропущено обязательное поле ingredients.')
-        if tags is None:
-            raise ValidationError('Пропущено обязательное поле tags.')
-        if len(ingredients) == 0:
+        if not ingredients:
             raise ValidationError('Выберите хотя бы один ингредиент.')
-        if len(tags) == 0:
+        if not tags:
             raise ValidationError('Выберите хотя бы один тег.')
         ingredients_list = []
         for item in ingredients:
@@ -155,8 +151,9 @@ class FavoriteSerializer(serializers.ModelSerializer):
         ]
 
     def to_representation(self, instance):
-        recipe_obj = Recipe.objects.get(id=instance.recipe.id)
-        return RecipeShortSerializer(recipe_obj, context=self.context).data
+        return RecipeShortSerializer(
+            instance.recipe, context=self.context
+        ).data
 
 
 class ShoppingCartSerializer(FavoriteSerializer):
