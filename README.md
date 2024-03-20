@@ -1,46 +1,39 @@
-# Проект FoodGram
+# Foodgram
 
-## Описание проекта
+## Описание
 
-«Фудграм» — проект, на котором пользователи могут публиковать рецепты, добавлять чужие рецепты в избранное и подписываться на публикации других авторов. Пользователям сайта также доступен сервис «Список покупок». Он позволяет создавать список продуктов, которые нужно купить для приготовления выбранных блюд.
+**«Фудграм»** — проект, на котором пользователи могут публиковать рецепты, добавлять чужие рецепты в избранное и подписываться на публикации других авторов. Пользователям сайта также доступен сервис «Список покупок». Он позволяет создавать список продуктов, которые нужно купить для приготовления выбранных блюд.
 
 ## Стэк технологий
 
-- Python - 3.9.10
+![](https://img.shields.io/badge/Python-3.9-black?style=flat&logo=python) 
+![](https://img.shields.io/badge/Django-3.2.3-black?style=flat&logo=django)
+![](https://img.shields.io/badge/DjangoRestFramework-3.12.4-black?style=flat&)
+![](https://img.shields.io/badge/Djoser-2.1.0-black?style=flat&logo=djoser) 
+![](https://img.shields.io/badge/Docker-black?style=flat&logo=docker)
+![](https://img.shields.io/badge/Gunicorn-20.1-black?style=flat&logo=gunicorn)
+![](https://img.shields.io/badge/Nginx-1.19.3-black?style=flat&logo=nginx)
+![](https://img.shields.io/badge/PostgreSQL-13.0-black?style=flat&logo=postgresql)
 
-- Django - 3.2.3
+## Порядок действий для запуска проекта
 
-- DjangoRestFramework - 3.12.4 
+***1. Клонировать репозиторий и перейти в папку c проектом***
 
-- Djoser - 2.1.0
-
-- Docker
-
-- Gunicorn - 20.1
-
-- Nginx - 1.19.3
-
-- PostgreSQL - 13.0
-
-## Установка проекта:
-
-Клонировать репозиторий и перейти в него в командной строке:
-
-```
-git clone https://github.com:ItsFreez/foodgram-project-react.git
+```shell
+git clone git@github.com:ItsFreez/Foodgram.git
 ```
 
-```
-cd foodgram-project-react/infra
+```shell
+cd Foodgram/infra
 ```
 
-Создаем файл .env с переменными окружения и заполняем его своими данными по шаблону:
+***2. Создать файл .env с переменными окружения и заполнить его данными по шаблону***
 
-```
+```shell
 touch .env
 ```
 
-```
+```shell
 POSTGRES_DB="foodgram_example"
 POSTGRES_USER="foodgram_user_example"
 POSTGRES_PASSWORD="foodgram_password_example"
@@ -52,50 +45,42 @@ DEBUG="False"
 ALLOWED_HOSTS="127.0.0.1,localhost"
 ```
 
-Запустите docker compose:
+***3. Запустить docker compose***
 
-*Windows*
-```
+*Для Windows*
+```shell
 docker compose up -d
 ```
 
-*Linux*
-```
+*Для MacOS/Linux*
+```shell
 sudo docker compose up -d
 ```
 
-Выполните миграции в контейнере:
+***4. Выполнить миграции в контейнере***
 
-```
+```shell
 docker compose exec backend python manage.py migrate
 ```
 
-Загрузите данные ингредиентов и теги (по желанию):
+***5. Заполнить базу данных проекта ингредиентами и тегами (по желанию)***
 
-```
+```shell
 docker compose exec backend python manage.py import_csv_data
 ```
 
-Скопируйте статику бэкенда:
+***6. Скопировать статику бэкенда***
 
-```
+```shell
 docker compose exec backend python manage.py collectstatic
 ```
 
-После запуска проект станет доступен по адресу - http://localhost
+***6. Изучить эндпоинты и примеры их использования для работы с API в документации Redoc***
 
-Документация будет доступна по адресу - http://localhost/api/docs/
+```shell
+http://localhost/api/docs/
+```
 
 ### Автор проекта
 
 [ItsFreez](https://github.com/ItsFreez)
-
-### Активный сайт проекта
-
-Доменное имя - https://foodgrampracticum.hopto.org
-
-### Данные админа для проверки
-
-Почта - Freez@yandex.ru
-
-Пароль - foodgramproject123456
