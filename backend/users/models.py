@@ -5,6 +5,8 @@ from django.db import models
 
 
 class User(AbstractUser):
+    """Модель для пользователей."""
+
     username_validator = UnicodeUsernameValidator()
 
     username = models.CharField(
@@ -55,6 +57,8 @@ class User(AbstractUser):
 
 
 class Follow(models.Model):
+    """Модель для подписок на пользователей."""
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

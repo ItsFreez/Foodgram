@@ -8,6 +8,8 @@ User = get_user_model()
 
 
 class Tag(models.Model):
+    """Модель для тэгов."""
+
     name = models.CharField(
         'Название',
         max_length=settings.MAXL_TAG_ATTRS,
@@ -46,6 +48,8 @@ class Tag(models.Model):
 
 
 class Ingredient(models.Model):
+    """Модель для ингредиентов."""
+
     name = models.CharField(
         'Название',
         max_length=settings.MAXL_INGRED_NAME,
@@ -73,8 +77,10 @@ class Ingredient(models.Model):
 
 
 class RecipeManager(models.Manager):
+    """Менеджер для модели рецептов, добавляющий новый метод аннотации."""
 
     def custom_annotate(self, user):
+        """Аннотирует объект полями избранное и в списке покупок."""
         is_favorited = user.favorites.filter(recipe=models.OuterRef('pk'))
         is_in_shopping_cart = user.shopping_cart.filter(
             recipe=models.OuterRef('pk')
@@ -86,6 +92,8 @@ class RecipeManager(models.Manager):
 
 
 class Recipe(models.Model):
+    """Модель для рецептов."""
+
     name = models.CharField(
         'Название',
         max_length=settings.MAXL_RECIPE_NAME,
@@ -141,6 +149,8 @@ class Recipe(models.Model):
 
 
 class RecipeIngredientsRelated(models.Model):
+    """Модель для связи ManyToMany моделей ингредиентов и рецептов."""
+
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
@@ -170,6 +180,8 @@ class RecipeIngredientsRelated(models.Model):
 
 
 class AbstractUserRecipeModel(models.Model):
+    """Абстрактная модель с полями пользователь и рецепт."""
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -186,6 +198,7 @@ class AbstractUserRecipeModel(models.Model):
 
 
 class Favorite(AbstractUserRecipeModel):
+    """Модель для списка избранного."""
 
     class Meta:
         default_related_name = 'favorites'
@@ -201,6 +214,7 @@ class Favorite(AbstractUserRecipeModel):
 
 
 class ShoppingCart(AbstractUserRecipeModel):
+    """Модель для списка покупок."""
 
     class Meta:
         default_related_name = 'shopping_cart'

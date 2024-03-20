@@ -138,6 +138,7 @@ class RecipeWriteSerializer(BaseRecipeSerializer):
 
 
 class FavoriteSerializer(serializers.ModelSerializer):
+    """Сериализатор для объектов Favorite."""
 
     class Meta:
         model = Favorite
@@ -157,6 +158,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
 
 class ShoppingCartSerializer(FavoriteSerializer):
+    """Сериализатор для объектов ShoppingCart."""
 
     class Meta:
         model = ShoppingCart

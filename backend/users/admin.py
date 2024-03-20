@@ -8,6 +8,8 @@ admin.site.empty_value_display = 'Не задано'
 
 
 class CustomUserAdmin(UserAdmin):
+    """Кастомный интерфейс админ-зоны для пользователей."""
+
     list_display = (
         'username',
         'email',
@@ -18,6 +20,8 @@ class CustomUserAdmin(UserAdmin):
 
 
 class FollowAdmin(admin.ModelAdmin):
+    """Кастомный интерфейс админ-зоны для подписок."""
+
     list_display = ('user', 'following')
     list_filter = ('following',)
 
